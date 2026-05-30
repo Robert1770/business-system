@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spice Museum & Africafe — Business Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0e0c;
+  --bg2: #1a1916;
+  --bg3: #232220;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #f0ede6;
+  --text2: #9e9b93;
+  --text3: #6b6860;
+  --gold: #c9a84c;
+  --gold2: #e8c97a;
+  --teal: #2db898;
+  --teal2: #3dd4b0;
+  --red: #e05454;
+  --red2: #f87171;
+  --amber: #f0a830;
+  --blue: #5b9ef7;
+  --radius: 10px;
+  --radius-lg: 16px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; min-height: 100vh; }
+
+/* LAYOUT */
+.shell { display: flex; min-height: 100vh; }
+.sidebar { width: 220px; min-width: 220px; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 0; position: sticky; top: 0; height: 100vh; }
+.main { flex: 1; overflow-x: hidden; }
+
+/* SIDEBAR */
+.logo-area { padding: 24px 20px 16px; border-bottom: 1px solid var(--border); }
+.logo-title { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--gold2); line-height: 1.3; }
+.logo-sub { font-size: 11px; color: var(--text3); margin-top: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
+.nav { flex: 1; padding: 12px 0; }
+.nav-section { padding: 6px 20px 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); }
+.nav-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 20px; border: none; background: none; color: var(--text2); font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; text-align: left; transition: all 0.15s; border-left: 2px solid transparent; }
+.nav-btn:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+.nav-btn.active { background: rgba(201,168,76,0.1); color: var(--gold2); border-left-color: var(--gold); }
+.nav-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+.sidebar-footer { padding: 16px 20px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text3); }
+
+/* HEADER */
+.page-header { padding: 28px 32px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.page-title { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--text); }
+.page-sub { font-size: 13px; color: var(--text3); margin-top: 4px; }
+.header-right { display: flex; gap: 8px; align-items: center; }
+.month-badge { background: var(--bg3); border: 1px solid var(--border2); color: var(--gold); font-family: 'DM Mono', monospace; font-size: 12px; padding: 5px 12px; border-radius: 6px; }
+
+/* CONTENT */
+.content { padding: 28px 32px; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* METRICS */
+.metrics-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.metric-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
+.metric-card.highlight { border-color: rgba(201,168,76,0.3); background: rgba(201,168,76,0.05); }
+.m-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.m-val { font-size: 24px; font-weight: 500; font-family: 'DM Mono', monospace; color: var(--text); line-height: 1; }
+.m-val.green { color: var(--teal2); }
+.m-val.red { color: var(--red2); }
+.m-val.gold { color: var(--gold2); }
+.m-sub { font-size: 11px; color: var(--text3); margin-top: 6px; }
+
+/* CARDS */
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 16px; overflow: hidden; }
+.card-head { padding: 16px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 13px; font-weight: 500; color: var(--text); }
+.card-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.card-body { padding: 16px 20px; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* TABLE */
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th { padding: 8px 12px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); font-weight: 500; border-bottom: 1px solid var(--border); }
+.data-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; font-family: 'DM Mono', monospace; }
+.tag.income { background: rgba(45,184,152,0.15); color: var(--teal2); }
+.tag.expense { background: rgba(224,84,84,0.15); color: var(--red2); }
+.tag.card { background: rgba(91,158,247,0.15); color: var(--blue); }
+.tag.cash { background: rgba(240,168,48,0.15); color: var(--amber); }
+.tag.low { background: rgba(224,84,84,0.15); color: var(--red2); }
+.tag.ok { background: rgba(45,184,152,0.15); color: var(--teal2); }
+.tag.warn { background: rgba(240,168,48,0.15); color: var(--amber); }
+
+/* FORM */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+.full-col { grid-column: 1 / -1; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
+.form-input, .form-select { background: var(--bg3); border: 1px solid var(--border2); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 9px 12px; border-radius: 8px; outline: none; transition: border-color 0.15s; width: 100%; }
+.form-input:focus, .form-select:focus { border-color: var(--gold); }
+.form-input::placeholder { color: var(--text3); }
+.form-select option { background: var(--bg2); }
+.total-preview { background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+.total-label { font-size: 12px; color: var(--text3); }
+.total-value { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 500; color: var(--gold2); }
+
+/* BUTTONS */
+.btn { padding: 9px 18px; border-radius: 8px; border: none; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+.btn-gold { background: var(--gold); color: #1a1712; }
+.btn-gold:hover { background: var(--gold2); }
+.btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
+.btn-ghost:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.btn-danger { background: rgba(224,84,84,0.15); border: 1px solid rgba(224,84,84,0.3); color: var(--red2); }
+.btn-danger:hover { background: rgba(224,84,84,0.25); }
+.btn-row { display: flex; gap: 8px; margin-top: 14px; }
+
+/* BAR CHART */
+.bar-chart { display: flex; flex-direction: column; gap: 8px; }
+.bar-row { display: flex; align-items: center; gap: 10px; }
+.bar-label { font-size: 12px; color: var(--text2); width: 70px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-track { flex: 1; height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+.bar-fill.rev { background: linear-gradient(90deg, #2db898, #3dd4b0); }
+.bar-fill.exp { background: linear-gradient(90deg, #e05454, #f87171); }
+.bar-amount { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); width: 60px; text-align: right; flex-shrink: 0; }
+
+/* DONUT */
+.donut-wrap { display: flex; align-items: center; gap: 24px; }
+.donut-legend { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.legend-name { color: var(--text2); flex: 1; }
+.legend-pct { font-family: 'DM Mono', monospace; color: var(--text); }
+
+/* ALERTS */
+.alert { padding: 12px 16px; border-radius: 8px; display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; font-size: 13px; }
+.alert.warn { background: rgba(240,168,48,0.1); border: 1px solid rgba(240,168,48,0.2); color: var(--amber); }
+.alert.danger { background: rgba(224,84,84,0.1); border: 1px solid rgba(224,84,84,0.2); color: var(--red2); }
+.alert.info { background: rgba(91,158,247,0.1); border: 1px solid rgba(91,158,247,0.2); color: var(--blue); }
+.alert.success { background: rgba(45,184,152,0.1); border: 1px solid rgba(45,184,152,0.2); color: var(--teal2); }
+
+/* TABS within page */
+.inner-tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 0; }
+.inner-tab { padding: 8px 16px; font-size: 13px; color: var(--text3); border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+.inner-tab.active { color: var(--gold2); border-bottom-color: var(--gold); }
+.inner-tab:hover { color: var(--text); }
+.sub-page { display: none; } .sub-page.active { display: block; }
+
+/* PROGRESS */
+.progress-bar { width: 100%; height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #c9a84c, #e8c97a); }
+
+/* NOTIFICATION */
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--bg2); border: 1px solid var(--border2); border-radius: 10px; padding: 14px 18px; font-size: 13px; color: var(--text); box-shadow: 0 8px 30px rgba(0,0,0,0.5); transform: translateY(80px); opacity: 0; transition: all 0.3s ease; z-index: 999; max-width: 320px; }
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* SEARCH & FILTER */
+.filter-bar { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
+.search-box { flex: 1; position: relative; }
+.search-box input { padding-left: 32px; }
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 14px; }
+
+/* INVENTORY */
+.stock-bar { display: flex; gap: 3px; }
+.stock-unit { width: 10px; height: 10px; border-radius: 2px; background: var(--bg3); }
+.stock-unit.filled { background: var(--teal); }
+.stock-unit.low { background: var(--amber); }
+.stock-unit.empty { background: var(--red); }
+
+/* SUMMARY TOTAL ROW */
+.total-row td { font-weight: 500; color: var(--gold2); border-top: 1px solid var(--border2) !important; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* responsive */
+@media(max-width:900px){.sidebar{display:none}.two-col,.three-col{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.form-grid.three{grid-template-columns:1fr 1fr}.content{padding:20px}.page-header{padding:20px}}
+</style>
+</head>
+<body>
+
+<div class="shell">
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo-area">
+    <div class="logo-title">Spice Museum<br>& Africafe</div>
+    <div class="logo-sub">Business Manager</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Overview</div>
+    <button class="nav-btn active" onclick="showPage('dashboard')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </button>
+    <div class="nav-section">Businesses</div>
+    <button class="nav-btn" onclick="showPage('cafe')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 8h1a4 4 0 110 8h-1"/><path d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z"/><path d="M6 1v3M10 1v3M14 1v3"/></svg>
+      Africafe
+    </button>
+    <button class="nav-btn" onclick="showPage('museum')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>
+      Spice Museum
+    </button>
+    <button class="nav-btn" onclick="showPage('bazaar')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Bazaar
+    </button>
+    <div class="nav-section">Management</div>
+    <button class="nav-btn" onclick="showPage('add')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Add Entry
+    </button>
+    <button class="nav-btn" onclick="showPage('inventory')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 3h-8a2 2 0 00-2 2v2h12V5a2 2 0 00-2-2z"/><path d="M12 12h.01"/></svg>
+      Inventory
+    </button>
+    <button class="nav-btn" onclick="showPage('reports')">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Reports
+    </button>
+  </nav>
+  <div class="sidebar-footer">MAY 2026 · Zanzibar</div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- DASHBOARD PAGE -->
+<div id="page-dashboard" class="page active">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Dashboard</div>
+      <div class="page-sub">All businesses at a glance — May 2026</div>
+    </div>
+    <div class="header-right">
+      <div class="month-badge">MAY 2026</div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="metrics-row">
+      <div class="metric-card highlight">
+        <div class="m-label">Total Revenue</div>
+        <div class="m-val gold" id="total-rev">2,208,000</div>
+        <div class="m-sub">TZS + $126.2 USD all businesses</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">Total Expenses</div>
+        <div class="m-val red" id="total-exp">839,000</div>
+        <div class="m-sub">TZS combined</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">Net Profit</div>
+        <div class="m-val green" id="total-net">1,369,000</div>
+        <div class="m-sub">TZS this month</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">Best Day (Café)</div>
+        <div class="m-val gold">209,000</div>
+        <div class="m-sub">TZS on Day 25</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">Days Active</div>
+        <div class="m-val">25</div>
+        <div class="m-sub">Africafe entries this month</div>
+      </div>
+    </div>
+
+    <!-- alerts -->
+    <div class="alert warn">⚠ Museum running at a loss: −30,000 TZS. Only 4 tour bookings recorded. Add more guest entries daily.</div>
+    <div class="alert danger">📦 Bazaar: "Doll Zanzibar Woman" is out of stock. 4 other items critically low.</div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Business comparison</div><div class="card-sub">Revenue vs expenses (TZS)</div></div></div>
+        <div class="card-body">
+          <div class="bar-chart" id="biz-compare-chart"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Revenue share</div><div class="card-sub">All businesses May 2026</div></div></div>
+        <div class="card-body">
+          <div class="donut-wrap">
+            <canvas id="donutChart" width="120" height="120" style="flex-shrink:0"></canvas>
+            <div class="donut-legend" id="donut-legend"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div><div class="card-title">Africafe — Daily cashflow (May)</div><div class="card-sub">Revenue bars by day</div></div></div>
+      <div class="card-body">
+        <div id="daily-chart" style="display:flex;align-items:flex-end;gap:4px;height:100px;"></div>
+        <div style="display:flex;gap:16px;margin-top:10px;font-size:11px;color:var(--text3);">
+          <span style="display:flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--teal);display:inline-block"></span>Revenue</span>
+          <span style="display:flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--red);display:inline-block"></span>Expenses</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AFRICAFE PAGE -->
+<div id="page-cafe" class="page">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Africafe</div>
+      <div class="page-sub">Cashflow account — May 2026</div>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-ghost" onclick="showPage('add')">+ Add entry</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="metrics-row">
+      <div class="metric-card"><div class="m-label">Total Revenue</div><div class="m-val green">1,973,000</div><div class="m-sub">TZS</div></div>
+      <div class="metric-card"><div class="m-label">USD Revenue</div><div class="m-val green">$33.20</div><div class="m-sub">Via card</div></div>
+      <div class="metric-card"><div class="m-label">Total Expenses</div><div class="m-val red">575,000</div><div class="m-sub">TZS</div></div>
+      <div class="metric-card highlight"><div class="m-label">Gross Profit</div><div class="m-val gold">1,398,000</div><div class="m-sub">TZS</div></div>
+      <div class="metric-card"><div class="m-label">Cash in Hand</div><div class="m-val">572,500</div><div class="m-sub">TZS + $26</div></div>
+      <div class="metric-card"><div class="m-label">Card Machine</div><div class="m-val">825,500</div><div class="m-sub">TZS + $7.2</div></div>
+    </div>
+
+    <div class="inner-tabs">
+      <button class="inner-tab active" onclick="showSub('cafe','transactions')">Transactions</button>
+      <button class="inner-tab" onclick="showSub('cafe','top-items')">Top Items</button>
+      <button class="inner-tab" onclick="showSub('cafe','expenses')">Expenses</button>
+    </div>
+
+    <div id="cafe-transactions" class="sub-page active">
+      <div class="filter-bar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input class="form-input search-box" type="text" id="cafe-search" placeholder="Search transactions..." oninput="filterTable('cafe-tbody','cafe-search')" style="padding-left:32px">
+        </div>
+        <select class="form-select" id="cafe-filter" onchange="filterTable('cafe-tbody','cafe-search')" style="width:140px">
+          <option value="">All types</option>
+          <option value="Income">Income</option>
+          <option value="Expense">Expense</option>
+        </select>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Qty</th><th>Unit Price</th><th>Amount</th><th>Currency</th><th>Pay Mode</th></tr></thead>
+            <tbody id="cafe-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="cafe-top-items" class="sub-page">
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Top selling menu items</div></div>
+          <div class="card-body">
+            <table class="data-table">
+              <thead><tr><th>#</th><th>Item</th><th>Units sold</th><th>Est. revenue</th></tr></thead>
+              <tbody id="top-items-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Sales by category</div></div>
+          <div class="card-body">
+            <div class="bar-chart" id="category-chart"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="cafe-expenses" class="sub-page">
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Expense breakdown</div></div>
+          <div class="card-body">
+            <div class="bar-chart" id="exp-chart"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">All expense entries</div></div>
+          <div style="overflow-x:auto; max-height:340px; overflow-y:auto">
+            <table class="data-table">
+              <thead><tr><th>Date</th><th>Item</th><th>Amount TZS</th></tr></thead>
+              <tbody id="cafe-exp-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MUSEUM PAGE -->
+<div id="page-museum" class="page">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Spice Museum</div>
+      <div class="page-sub">Cashflow account — May 2026</div>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-ghost" onclick="showPage('add')">+ Add entry</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="alert danger">Museum is running at a loss this month. Expenses exceed revenue by 30,000 TZS. Try to record more guest visits.</div>
+    <div class="metrics-row">
+      <div class="metric-card"><div class="m-label">Revenue</div><div class="m-val green">85,000</div><div class="m-sub">TZS</div></div>
+      <div class="metric-card"><div class="m-label">USD Revenue</div><div class="m-val green">$20.00</div><div class="m-sub">Via card</div></div>
+      <div class="metric-card"><div class="m-label">Expenses</div><div class="m-val red">115,000</div><div class="m-sub">TZS</div></div>
+      <div class="metric-card"><div class="m-label">Net P/L</div><div class="m-val red">−30,000</div><div class="m-sub">TZS loss</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Guest bookings recorded</div></div>
+        <div class="card-body">
+          <table class="data-table">
+            <thead><tr><th>Date</th><th>Guests</th><th>Amount</th><th>Currency</th><th>Mode</th></tr></thead>
+            <tbody id="museum-income-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Expense entries</div></div>
+        <div class="card-body">
+          <table class="data-table">
+            <thead><tr><th>Date</th><th>Item</th><th>Amount TZS</th></tr></thead>
+            <tbody id="museum-exp-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BAZAAR PAGE -->
+<div id="page-bazaar" class="page">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Bazaar</div>
+      <div class="page-sub">Shop cashflow & sales — May 2026</div>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-ghost" onclick="showPage('add')">+ Add entry</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="metrics-row">
+      <div class="metric-card"><div class="m-label">Revenue</div><div class="m-val green">150,000</div><div class="m-sub">TZS</div></div>
+      <div class="metric-card"><div class="m-label">USD Revenue</div><div class="m-val green">$73.00</div><div class="m-sub">Via card</div></div>
+      <div class="metric-card"><div class="m-label">Expenses</div><div class="m-val red">149,000</div><div class="m-sub">TZS</div></div>
+      <div class="metric-card highlight"><div class="m-label">Net Profit</div><div class="m-val gold">1,000</div><div class="m-sub">TZS + $73 USD</div></div>
+      <div class="metric-card"><div class="m-label">Card Amount</div><div class="m-val">95,000</div><div class="m-sub">TZS via machine</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Sales transactions</div></div>
+        <div class="card-body">
+          <table class="data-table">
+            <thead><tr><th>Date</th><th>Item sold</th><th>Qty</th><th>Amount</th><th>Mode</th></tr></thead>
+            <tbody id="bazaar-sales-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Expense entries</div></div>
+        <div class="card-body">
+          <table class="data-table">
+            <thead><tr><th>Date</th><th>Item</th><th>Amount TZS</th></tr></thead>
+            <tbody id="bazaar-exp-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD ENTRY PAGE -->
+<div id="page-add" class="page">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Add Entry</div>
+      <div class="page-sub">Record income or expense for any business</div>
+    </div>
+  </div>
+  <div class="content">
+    <div style="max-width:640px;">
+      <div class="card">
+        <div class="card-head"><div class="card-title">New transaction</div></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Business</label>
+              <select class="form-select" id="a-biz">
+                <option>Africafe</option>
+                <option>Spice Museum</option>
+                <option>Bazaar</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Type</label>
+              <select class="form-select" id="a-type">
+                <option value="income">Income / Sale</option>
+                <option value="expense">Expense / Cost</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date</label>
+              <input type="date" class="form-input" id="a-date">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Time (optional)</label>
+              <input type="time" class="form-input" id="a-time">
+            </div>
+            <div class="form-group full-col">
+              <label class="form-label">Description</label>
+              <input type="text" class="form-input" id="a-desc" placeholder="e.g. Cappuccino, Staff transport, Electricity...">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Quantity</label>
+              <input type="number" class="form-input" id="a-qty" value="1" min="1" oninput="calcEntry()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Unit price</label>
+              <input type="number" class="form-input" id="a-price" placeholder="0" oninput="calcEntry()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Currency</label>
+              <select class="form-select" id="a-cur" onchange="calcEntry()">
+                <option>TZS</option><option>USD</option><option>EUR</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Payment mode</label>
+              <select class="form-select" id="a-pay">
+                <option>Cash</option><option>Card</option>
+              </select>
+            </div>
+            <div class="form-group full-col">
+              <div class="total-preview">
+                <span class="total-label">Calculated total</span>
+                <span class="total-value" id="a-total">— TZS</span>
+              </div>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-gold" onclick="saveEntry()">Save entry</button>
+            <button class="btn btn-ghost" onclick="clearEntry()">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Recently added entries</div><div class="card-sub">Session only</div></div>
+        <div class="card-body">
+          <table class="data-table">
+            <thead><tr><th>Business</th><th>Type</th><th>Description</th><th>Amount</th></tr></thead>
+            <tbody id="recent-tbody">
+              <tr><td colspan="4" style="text-align:center;color:var(--text3);padding:20px">No entries added yet this session</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INVENTORY PAGE -->
+<div id="page-inventory" class="page">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Inventory</div>
+      <div class="page-sub">Bazaar stock & café supplies</div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="inner-tabs">
+      <button class="inner-tab active" onclick="showSub('inv','bazaar')">Bazaar stock</button>
+      <button class="inner-tab" onclick="showSub('inv','cafe-inv')">Café supplies</button>
+    </div>
+
+    <div id="inv-bazaar" class="sub-page active">
+      <div class="alert warn">4 items out of stock or critically low. Review and restock soon.</div>
+      <div class="card" style="margin-bottom:0">
+        <div class="filter-bar" style="padding:12px 16px 0">
+          <input class="form-input" type="text" id="inv-search" placeholder="Search inventory..." oninput="filterTable('inv-tbody','inv-search')" style="flex:1">
+          <select class="form-select" id="inv-filter" onchange="filterTable('inv-tbody','inv-search')" style="width:140px">
+            <option value="">All status</option>
+            <option value="Out of stock">Out of stock</option>
+            <option value="Low">Low stock</option>
+            <option value="OK">OK</option>
+          </select>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Item</th><th>In stock</th><th>Selling price</th><th>Status</th></tr></thead>
+            <tbody id="inv-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="inv-cafe-inv" class="sub-page">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Café menu — items sold this month</div></div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Menu item</th><th>Sold May</th><th>Est. revenue TZS</th></tr></thead>
+            <tbody id="cafe-menu-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REPORTS PAGE -->
+<div id="page-reports" class="page">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Reports</div>
+      <div class="page-sub">Monthly analysis & summaries</div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="metrics-row" style="margin-bottom:20px">
+      <div class="metric-card highlight"><div class="m-label">Combined revenue</div><div class="m-val gold">2,208,000</div><div class="m-sub">TZS + $126.2 USD</div></div>
+      <div class="metric-card"><div class="m-label">Combined expenses</div><div class="m-val red">839,000</div><div class="m-sub">TZS</div></div>
+      <div class="metric-card"><div class="m-label">Net profit</div><div class="m-val green">1,369,000</div><div class="m-sub">TZS this month</div></div>
+      <div class="metric-card"><div class="m-label">Profit margin</div><div class="m-val green">62%</div><div class="m-sub">Overall</div></div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-head"><div class="card-title">P&L by business</div></div>
+        <div class="card-body">
+          <table class="data-table">
+            <thead><tr><th>Business</th><th>Revenue</th><th>Expenses</th><th>P/L</th></tr></thead>
+            <tbody>
+              <tr><td>Africafe</td><td style="color:var(--teal2)">1,973,000</td><td style="color:var(--red2)">575,000</td><td style="color:var(--teal2)">+1,398,000</td></tr>
+              <tr><td>Museum</td><td style="color:var(--teal2)">85,000</td><td style="color:var(--red2)">115,000</td><td style="color:var(--red2)">−30,000</td></tr>
+              <tr><td>Bazaar</td><td style="color:var(--teal2)">150,000</td><td style="color:var(--red2)">149,000</td><td style="color:var(--teal2)">+1,000</td></tr>
+              <tr class="total-row"><td>TOTAL</td><td>2,208,000</td><td>839,000</td><td>+1,369,000</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Africafe — weekly revenue</div></div>
+        <div class="card-body">
+          <div class="bar-chart">
+            <div class="bar-row"><span class="bar-label">Week 1</span><div class="bar-track"><div class="bar-fill rev" style="width:38%"></div></div><span class="bar-amount">438k</span></div>
+            <div class="bar-row"><span class="bar-label">Week 2</span><div class="bar-track"><div class="bar-fill rev" style="width:52%"></div></div><span class="bar-amount">399k</span></div>
+            <div class="bar-row"><span class="bar-label">Week 3</span><div class="bar-track"><div class="bar-fill rev" style="width:67%"></div></div><span class="bar-amount">476k</span></div>
+            <div class="bar-row"><span class="bar-label">Week 4</span><div class="bar-track"><div class="bar-fill rev" style="width:100%"></div></div><span class="bar-amount">660k</span></div>
+          </div>
+          <div style="margin-top:16px;font-size:12px;color:var(--text3)">Revenue is growing — Week 4 is the strongest.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">Top expense categories — all businesses</div></div>
+      <div class="card-body">
+        <div class="bar-chart" id="report-exp-chart"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">Cash vs card breakdown</div></div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+          <div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Africafe</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:58%"></div></div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px">58% card / 42% cash</div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Museum</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px">30% card / 70% cash</div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Bazaar</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:72%"></div></div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px">72% card / 28% cash</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const cafeTransactions = [
+  {date:'01 May',type:'Expense',desc:'Eggs',qty:5,price:400,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'01 May',type:'Expense',desc:'Staff transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'01 May',type:'Income',desc:'Avocado toast',qty:1,price:10000,amount:10000,cur:'TZS',pay:'Card'},
+  {date:'01 May',type:'Income',desc:'Cookies',qty:2,price:5000,amount:10000,cur:'TZS',pay:'Card'},
+  {date:'01 May',type:'Income',desc:'Cappuccino',qty:1,price:8000,amount:8000,cur:'TZS',pay:'Card'},
+  {date:'01 May',type:'Income',desc:'Americano',qty:1,price:0,amount:3.2,cur:'USD',pay:'Card'},
+  {date:'01 May',type:'Income',desc:'Fresh coconut',qty:2,price:5000,amount:10000,cur:'TZS',pay:'Cash'},
+  {date:'02 May',type:'Expense',desc:'Bread',qty:1,price:1500,amount:1500,cur:'TZS',pay:'Cash'},
+  {date:'02 May',type:'Expense',desc:'Eggs',qty:5,price:400,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'02 May',type:'Expense',desc:'Staff transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'02 May',type:'Income',desc:'Cappuccino',qty:2,price:8000,amount:16000,cur:'TZS',pay:'Card'},
+  {date:'02 May',type:'Income',desc:'Cookies',qty:2,price:5000,amount:10000,cur:'TZS',pay:'Card'},
+  {date:'03 May',type:'Expense',desc:'Water 20L',qty:1,price:6000,amount:6000,cur:'TZS',pay:'Cash'},
+  {date:'03 May',type:'Expense',desc:'Lemon',qty:1,price:1000,amount:1000,cur:'TZS',pay:'Cash'},
+  {date:'03 May',type:'Expense',desc:'Staff transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'05 May',type:'Expense',desc:'Water 1.5L',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'05 May',type:'Expense',desc:'Staff transport',qty:1,price:1000,amount:1000,cur:'TZS',pay:'Cash'},
+  {date:'05 May',type:'Expense',desc:'Tissue',qty:2,price:1500,amount:3000,cur:'TZS',pay:'Cash'},
+  {date:'05 May',type:'Income',desc:'Vanilla coffee',qty:2,price:0,amount:6,cur:'USD',pay:'Cash'},
+  {date:'05 May',type:'Income',desc:'Pineapple juice',qty:1,price:0,amount:3,cur:'USD',pay:'Cash'},
+  {date:'05 May',type:'Income',desc:'Cappuccino',qty:2,price:8000,amount:16000,cur:'TZS',pay:'Card'},
+  {date:'05 May',type:'Income',desc:'Americano',qty:1,price:8000,amount:8000,cur:'TZS',pay:'Card'},
+  {date:'05 May',type:'Income',desc:'Iced tea',qty:1,price:9000,amount:9000,cur:'TZS',pay:'Card'},
+  {date:'06 May',type:'Expense',desc:'Banana',qty:1,price:3000,amount:3000,cur:'TZS',pay:'Cash'},
+  {date:'06 May',type:'Expense',desc:'Staff transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'06 May',type:'Expense',desc:'Tour guide commission',qty:1,price:6000,amount:6000,cur:'TZS',pay:'Cash'},
+  {date:'06 May',type:'Expense',desc:'Staff food',qty:1,price:5000,amount:5000,cur:'TZS',pay:'Cash'},
+  {date:'08 May',type:'Expense',desc:'Water 20L',qty:1,price:6000,amount:6000,cur:'TZS',pay:'Cash'},
+  {date:'08 May',type:'Expense',desc:'Staff transport',qty:1,price:1000,amount:1000,cur:'TZS',pay:'Cash'},
+  {date:'08 May',type:'Income',desc:'Cappuccino',qty:1,price:8000,amount:8000,cur:'TZS',pay:'Cash'},
+  {date:'08 May',type:'Income',desc:'Cappuccino',qty:1,price:8000,amount:8000,cur:'TZS',pay:'Cash'},
+  {date:'09 May',type:'Expense',desc:'Pasta',qty:1,price:7000,amount:7000,cur:'TZS',pay:'Cash'},
+  {date:'09 May',type:'Expense',desc:'Fresh coconut',qty:8,price:1000,amount:8000,cur:'TZS',pay:'Cash'},
+  {date:'09 May',type:'Expense',desc:'Staff transport',qty:3,price:1000,amount:3000,cur:'TZS',pay:'Cash'},
+  {date:'09 May',type:'Expense',desc:'Electricity',qty:1,price:20000,amount:20000,cur:'TZS',pay:'Cash'},
+  {date:'09 May',type:'Income',desc:'Mango passion',qty:1,price:9000,amount:9000,cur:'TZS',pay:'Card'},
+  {date:'09 May',type:'Income',desc:'Mango juice',qty:1,price:8000,amount:8000,cur:'TZS',pay:'Card'},
+  {date:'09 May',type:'Income',desc:'Avocado toast',qty:1,price:10000,amount:10000,cur:'TZS',pay:'Card'},
+  {date:'09 May',type:'Income',desc:'Cappuccino',qty:3,price:8000,amount:24000,cur:'TZS',pay:'Card'},
+  {date:'10 May',type:'Expense',desc:'Tomato',qty:1,price:1500,amount:1500,cur:'TZS',pay:'Cash'},
+  {date:'10 May',type:'Expense',desc:'Onion',qty:1,price:1500,amount:1500,cur:'TZS',pay:'Cash'},
+  {date:'10 May',type:'Expense',desc:'Bread',qty:2,price:1500,amount:3000,cur:'TZS',pay:'Cash'},
+  {date:'10 May',type:'Expense',desc:'Staff transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'10 May',type:'Income',desc:'Pasta',qty:2,price:12000,amount:24000,cur:'TZS',pay:'Cash'},
+  {date:'10 May',type:'Income',desc:'Hibiscus juice',qty:2,price:8000,amount:16000,cur:'TZS',pay:'Cash'},
+  {date:'11 May',type:'Expense',desc:'Water',qty:1,price:6000,amount:6000,cur:'TZS',pay:'Cash'},
+  {date:'11 May',type:'Expense',desc:'Staff transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'11 May',type:'Expense',desc:'P.O.Extender',qty:1,price:30000,amount:30000,cur:'TZS',pay:'Cash'},
+  {date:'11 May',type:'Income',desc:'Mango passion',qty:1,price:9000,amount:9000,cur:'TZS',pay:'Card'},
+  {date:'11 May',type:'Income',desc:'Iced latte',qty:1,price:9000,amount:9000,cur:'TZS',pay:'Card'},
+  {date:'11 May',type:'Income',desc:'Iced coconut',qty:1,price:7500,amount:7500,cur:'TZS',pay:'Card'},
+  {date:'12 May',type:'Expense',desc:'Banana',qty:1,price:3000,amount:3000,cur:'TZS',pay:'Cash'},
+  {date:'12 May',type:'Expense',desc:'Staff transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'12 May',type:'Expense',desc:'Staff food',qty:1,price:5000,amount:5000,cur:'TZS',pay:'Cash'},
+  {date:'12 May',type:'Income',desc:'Cappuccino',qty:2,price:8000,amount:16000,cur:'TZS',pay:'Card'},
+  {date:'12 May',type:'Income',desc:'Iced latte',qty:2,price:9000,amount:18000,cur:'TZS',pay:'Card'},
+  {date:'13 May',type:'Expense',desc:'Water',qty:1,price:6000,amount:6000,cur:'TZS',pay:'Cash'},
+  {date:'13 May',type:'Expense',desc:'Tissue',qty:2,price:1500,amount:3000,cur:'TZS',pay:'Cash'},
+  {date:'13 May',type:'Expense',desc:'Staff transport',qty:1,price:1000,amount:1000,cur:'TZS',pay:'Cash'},
+  {date:'13 May',type:'Income',desc:'Water 0.5L',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Card'},
+  {date:'13 May',type:'Income',desc:'Hibiscus juice',qty:1,price:7000,amount:7000,cur:'TZS',pay:'Card'},
+  {date:'13 May',type:'Income',desc:'Avocado toast',qty:1,price:15000,amount:15000,cur:'TZS',pay:'Card'},
+  {date:'14 May',type:'Expense',desc:'Banana',qty:1,price:3000,amount:3000,cur:'TZS',pay:'Cash'},
+  {date:'14 May',type:'Expense',desc:'Staff transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'15 May',type:'Expense',desc:'Fresh coconut',qty:6,price:1000,amount:6000,cur:'TZS',pay:'Cash'},
+  {date:'15 May',type:'Expense',desc:'Staff transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'15 May',type:'Expense',desc:'Water 20L',qty:1,price:6000,amount:6000,cur:'TZS',pay:'Cash'},
+  {date:'16 May',type:'Expense',desc:'Pineapple',qty:1,price:5000,amount:5000,cur:'TZS',pay:'Cash'},
+  {date:'16 May',type:'Expense',desc:'Mango',qty:2,price:2000,amount:4000,cur:'TZS',pay:'Cash'},
+  {date:'16 May',type:'Expense',desc:'Staff transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'16 May',type:'Expense',desc:'Internet',qty:1,price:102000,amount:102000,cur:'TZS',pay:'Cash'},
+  {date:'17 May',type:'Expense',desc:'Fresh coconut',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'17 May',type:'Expense',desc:'Staff transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'18 May',type:'Expense',desc:'Water 20L',qty:1,price:6000,amount:6000,cur:'TZS',pay:'Cash'},
+  {date:'18 May',type:'Expense',desc:'Bread',qty:1,price:1500,amount:1500,cur:'TZS',pay:'Cash'},
+  {date:'18 May',type:'Expense',desc:'Tea bags',qty:1,price:4000,amount:4000,cur:'TZS',pay:'Cash'},
+  {date:'18 May',type:'Expense',desc:'Tour guide commission',qty:1,price:6000,amount:6000,cur:'TZS',pay:'Cash'},
+  {date:'18 May',type:'Expense',desc:'Passion fruit',qty:1,price:10000,amount:10000,cur:'TZS',pay:'Cash'},
+  {date:'19 May',type:'Expense',desc:'Staff transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'19 May',type:'Expense',desc:'Tissue',qty:2,price:1500,amount:3000,cur:'TZS',pay:'Cash'},
+  {date:'20 May',type:'Expense',desc:'Staff transport',qty:1,price:1000,amount:1000,cur:'TZS',pay:'Cash'},
+  {date:'21 May',type:'Expense',desc:'Tissue',qty:2,price:1500,amount:3000,cur:'TZS',pay:'Cash'},
+  {date:'21 May',type:'Expense',desc:'Commission',qty:1,price:3000,amount:3000,cur:'TZS',pay:'Cash'},
+  {date:'21 May',type:'Expense',desc:'Staff transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'22 May',type:'Expense',desc:'Electricity',qty:1,price:30000,amount:30000,cur:'TZS',pay:'Cash'},
+  {date:'22 May',type:'Expense',desc:'Water 20L',qty:1,price:6000,amount:6000,cur:'TZS',pay:'Cash'},
+  {date:'22 May',type:'Expense',desc:'Sugar',qty:1,price:2000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'22 May',type:'Expense',desc:'Commission',qty:1,price:2000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'22 May',type:'Expense',desc:'Staff transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'23 May',type:'Expense',desc:'Likwama',qty:1,price:5000,amount:5000,cur:'TZS',pay:'Cash'},
+  {date:'23 May',type:'Expense',desc:'Staff food',qty:1,price:5000,amount:5000,cur:'TZS',pay:'Cash'},
+  {date:'23 May',type:'Expense',desc:'Staff transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'24 May',type:'Expense',desc:'Staff transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'25 May',type:'Expense',desc:'Water 20L',qty:1,price:6000,amount:6000,cur:'TZS',pay:'Cash'},
+  {date:'25 May',type:'Expense',desc:'Bread',qty:2,price:1500,amount:3000,cur:'TZS',pay:'Cash'},
+  {date:'25 May',type:'Expense',desc:'Fresh coconut',qty:12,price:1000,amount:12000,cur:'TZS',pay:'Cash'},
+  {date:'25 May',type:'Expense',desc:'Pineapple',qty:2,price:4000,amount:8000,cur:'TZS',pay:'Cash'},
+  {date:'25 May',type:'Expense',desc:'Staff transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'26 May',type:'Expense',desc:'Electricity',qty:1,price:40000,amount:40000,cur:'TZS',pay:'Cash'},
+  {date:'26 May',type:'Expense',desc:'Mango',qty:4,price:2000,amount:8000,cur:'TZS',pay:'Cash'},
+  {date:'26 May',type:'Expense',desc:'Sugar',qty:1,price:2500,amount:2500,cur:'TZS',pay:'Cash'},
+  {date:'26 May',type:'Expense',desc:'Tour guide commission',qty:1,price:5000,amount:5000,cur:'TZS',pay:'Cash'},
+  {date:'26 May',type:'Expense',desc:'Staff transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'28 May',type:'Expense',desc:'Mango',qty:2,price:2000,amount:4000,cur:'TZS',pay:'Cash'},
+  {date:'28 May',type:'Expense',desc:'Pineapple',qty:1,price:5000,amount:5000,cur:'TZS',pay:'Cash'},
+  {date:'28 May',type:'Expense',desc:'Transport',qty:2,price:1000,amount:2000,cur:'TZS',pay:'Cash'},
+  {date:'31 May',type:'Expense',desc:'Water',qty:1,price:6000,amount:6000,cur:'TZS',pay:'Cash'},
+  {date:'31 May',type:'Expense',desc:'Staff transport',qty:1,price:1000,amount:1000,cur:'TZS',pay:'Cash'},
+  {date:'31 May',type:'Expense',desc:'Staff food',qty:1,price:5000,amount:5000,cur:'TZS',pay:'Cash'},
+  {date:'31 May',type:'Expense',desc:'Electricity',qty:1,price:50000,amount:50000,cur:'TZS',pay:'Cash'},
+];
+
+const museumIncome = [
+  {date:'01 May',guests:2,amount:20,cur:'USD',pay:'Card'},
+  {date:'09 May',guests:2,amount:30000,cur:'TZS',pay:'Cash'},
+  {date:'14 May',guests:3,amount:30000,cur:'TZS',pay:'Cash'},
+  {date:'15 May',guests:1,amount:25000,cur:'TZS',pay:'Cash'},
+];
+const museumExp = [
+  {date:'01–28 May',item:'Staff transport (daily)',amount:28000},
+  {date:'26 May',item:'Electricity',amount:50000},
+  {date:'22 May',item:'Udi (incense)',amount:5000},
+  {date:'22 May',item:'Udi charcoal',amount:4000},
+  {date:'14 May',item:'Robert transport (Kizimkazi)',amount:10000},
+  {date:'Various',item:'Other small expenses',amount:18000},
+];
+
+const bazaarSales = [
+  {date:'02 May',item:'Coffee beans',qty:2,amount:50000,cur:'TZS',pay:'Cash'},
+  {date:'02 May',item:'Women shirt',qty:1,amount:25,cur:'USD',pay:'Card'},
+  {date:'02 May',item:'Small soap',qty:1,amount:5000,cur:'TZS',pay:'Cash'},
+  {date:'20 May',item:'Doll',qty:1,amount:50000,cur:'TZS',pay:'Card'},
+  {date:'28 May',item:'Doll x2',qty:2,amount:48,cur:'USD',pay:'Cash'},
+  {date:'28 May',item:'Bag',qty:1,amount:45000,cur:'TZS',pay:'Cash'},
+];
+const bazaarExp = [
+  {date:'05 May',item:'Staff transport',amount:1000},
+  {date:'06 May',item:'Udi',amount:10000},
+  {date:'06 May',item:'Udi charcoal',amount:10000},
+  {date:'07 May',item:'Electricity',amount:20000},
+  {date:'07 May',item:'Staff food',amount:5000},
+  {date:'12 May',item:'Electricity',amount:50000},
+  {date:'12–28 May',item:'Staff food (daily ~4000)',amount:48000},
+  {date:'25 May',item:'Staff food',amount:5000},
+];
+
+const topItems = [
+  {name:'Cappuccino',sold:19,price:8000},{name:'Iced coconut',sold:11,price:8000},{name:'Avocado toast',sold:11,price:10500},
+  {name:'Cakes/cookies',sold:10,price:3500},{name:'Mango passion',sold:7,price:9000},{name:'Tandoor/pasta',sold:6,price:12000},
+  {name:'Spiced iced coffee',sold:5,price:10000},{name:'Hibiscus juice',sold:5,price:7000},{name:'Iced latte',sold:5,price:9000},
+  {name:'Lemonade',sold:3,price:9000},{name:'Iced lemonade',sold:3,price:10000},{name:'Pineapple passion',sold:3,price:9000},
+];
+
+const bazaarInventory = [
+  {n:1,name:'Bracelets (pair)',stock:5,price:10000},{n:2,name:'Bracelets (single)',stock:4,price:3000},
+  {n:3,name:'Wood decoration',stock:3,price:45000},{n:4,name:'Batiki napkin',stock:1,price:5000},
+  {n:5,name:'Phone pocket (zip)',stock:3,price:25000},{n:6,name:'Phone pocket (no zip)',stock:4,price:15000},
+  {n:7,name:'Market bag',stock:2,price:35000},{n:8,name:'Jezi',stock:2,price:25000},
+  {n:9,name:'Vibanio (clasp)',stock:6,price:5000},{n:10,name:'Soap medium',stock:54,price:5000},
+  {n:11,name:'Soap big',stock:9,price:15000},{n:12,name:'Doll Masai',stock:6,price:60000},
+  {n:13,name:'Doll Boy',stock:7,price:50000},{n:14,name:'Doll Kanzu',stock:3,price:50000},
+  {n:15,name:'Doll Zanzibar woman',stock:0,price:50000},{n:16,name:'Doll Bi.Kdude',stock:3,price:60000},
+  {n:17,name:'Doll Girl',stock:5,price:50000},{n:18,name:'EarRings',stock:7,price:10000},
+  {n:19,name:'Oil 30ml',stock:25,price:15000},{n:20,name:'Oil 50ml',stock:17,price:20000},
+  {n:21,name:'Oil 100ml',stock:14,price:30000},{n:22,name:'Toto dress',stock:2,price:20000},
+  {n:23,name:'Kimono full',stock:2,price:200000},{n:24,name:'Kimono trouser',stock:1,price:65000},
+  {n:25,name:'Mama Africa bag',stock:22,price:45000},{n:26,name:'Gunia bag',stock:2,price:25000},
+  {n:27,name:'School bag',stock:5,price:35000},{n:28,name:'Candles',stock:9,price:8000},
+  {n:29,name:'Assalam T-shirt',stock:8,price:25000},{n:30,name:'Ecoprint shirt (man)',stock:3,price:70000},
+  {n:31,name:'Leather wallet',stock:5,price:20000},{n:32,name:'Kanga small',stock:3,price:12000},
+  {n:33,name:'Spices (small pkt)',stock:41,price:10000},{n:34,name:'Spices (big pkt)',stock:10,price:20000},
+  {n:35,name:'Bob Marley bag',stock:3,price:35000},{n:36,name:'Kimono Turkey',stock:4,price:190000},
+  {n:37,name:'Kanga big',stock:1,price:25000},{n:38,name:'Doll Fisherman',stock:4,price:60000},
+  {n:39,name:'35k cloths',stock:13,price:35000},{n:40,name:'50k cloths',stock:13,price:50000},
+];
+
+const cafeMenu = [
+  {n:1,name:'Avocado toast',sold:11,price:10000},{n:2,name:'Americano',sold:6,price:7500},
+  {n:3,name:'Cappuccino',sold:19,price:8000},{n:4,name:'Cafe latte',sold:5,price:8000},
+  {n:5,name:'Espresso',sold:2,price:7000},{n:6,name:'Vanilla coffee',sold:3,price:8000},
+  {n:7,name:'Iced americano',sold:4,price:8000},{n:8,name:'Iced latte',sold:5,price:9000},
+  {n:9,name:'Iced cappuccino',sold:2,price:9000},{n:10,name:'Iced mocha',sold:1,price:9000},
+  {n:11,name:'Spiced iced coffee',sold:5,price:10000},{n:12,name:'Zanzibar spice tea',sold:2,price:10000},
+  {n:13,name:'Mango juice',sold:1,price:8000},{n:14,name:'Mango passion',sold:7,price:9000},
+  {n:15,name:'Pineapple passion',sold:3,price:9000},{n:16,name:'Hibiscus juice',sold:5,price:7000},
+  {n:17,name:'Lemonade',sold:3,price:9000},{n:18,name:'Fresh coconut',sold:2,price:7000},
+  {n:19,name:'Iced coconut',sold:11,price:8000},{n:20,name:'Iced lemonade',sold:3,price:10000},
+  {n:21,name:'Zanzibar sunshine',sold:2,price:14500},{n:22,name:'Cakes/cookies',sold:10,price:3500},
+  {n:23,name:'Chocolate fondue',sold:3,price:10000},{n:24,name:'Zanzicacao island',sold:2,price:14500},
+  {n:25,name:'Coconut choco peanut',sold:2,price:14500},{n:26,name:'Tandoor chapazzi',sold:3,price:12000},
+  {n:27,name:'Tandoor/pasta special',sold:6,price:12000},{n:28,name:'Water 0.5L',sold:3,price:1000},
+  {n:29,name:'Water 1.5L',sold:6,price:2000},{n:30,name:'Black tea',sold:1,price:7000},
+];
+
+// ── POPULATE TABLES ───────────────────────────────────────────────────────────
+function r(n){ return `<tr>${n}</tr>`; }
+function td(v,cls){ return `<td${cls?' class="'+cls+'"':''}>${v}</td>`; }
+
+function populateCafe(){
+  const tbody = document.getElementById('cafe-tbody');
+  tbody.innerHTML = cafeTransactions.map(t=>{
+    const amt = t.cur==='TZS' ? t.amount.toLocaleString()+' TZS' : t.cur==='USD' ? '$'+t.amount : '€'+t.amount;
+    return `<tr>
+      <td>${t.date}</td>
+      <td><span class="tag ${t.type==='Income'?'income':'expense'}">${t.type}</span></td>
+      <td>${t.desc}</td><td>${t.qty}</td>
+      <td style="font-family:'DM Mono',monospace">${t.price>0?t.price.toLocaleString():'-'} ${t.price>0?'TZS':''}</td>
+      <td style="font-family:'DM Mono',monospace;color:${t.type==='Income'?'var(--teal2)':'var(--red2)'}">${amt}</td>
+      <td>${t.cur}</td>
+      <td><span class="tag ${t.pay.toLowerCase()}">${t.pay}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function populateTopItems(){
+  const tbody = document.getElementById('top-items-tbody');
+  tbody.innerHTML = topItems.map((t,i)=>{
+    return `<tr>
+      <td style="color:var(--text3);font-family:'DM Mono',monospace">${i+1}</td>
+      <td>${t.name}</td>
+      <td style="font-family:'DM Mono',monospace">${t.sold}</td>
+      <td style="color:var(--teal2);font-family:'DM Mono',monospace">${(t.sold*t.price).toLocaleString()}</td>
+    </tr>`;
+  }).join('');
+
+  // category chart
+  const cats = {Coffee:0,Drinks:0,Food:0,Other:0};
+  const coffeeItems = ['cappuccino','americano','latte','espresso','vanilla','mocha','spiced','iced amer','iced lat','iced cap','filter','turkish','cardamon','zanzibar spice'];
+  topItems.forEach(t=>{
+    const l = t.name.toLowerCase();
+    if(coffeeItems.some(c=>l.includes(c)||c.includes(l.split(' ')[0]))){cats.Coffee+=t.sold*t.price;}
+    else if(l.includes('juice')||l.includes('coconut')||l.includes('passion')||l.includes('lemon')||l.includes('tea')||l.includes('mango')||l.includes('sunshine')||l.includes('hibiscus')){cats.Drinks+=t.sold*t.price;}
+    else if(l.includes('toast')||l.includes('pasta')||l.includes('chapazzi')||l.includes('tandoor')){cats.Food+=t.sold*t.price;}
+    else{cats.Other+=t.sold*t.price;}
+  });
+  const maxCat = Math.max(...Object.values(cats));
+  const catEl = document.getElementById('category-chart');
+  catEl.innerHTML = Object.entries(cats).map(([k,v])=>{
+    const w = Math.round((v/maxCat)*100);
+    return `<div class="bar-row"><span class="bar-label">${k}</span><div class="bar-track"><div class="bar-fill rev" style="width:${w}%"></div></div><span class="bar-amount">${Math.round(v/1000)}k</span></div>`;
+  }).join('');
+}
+
+function populateCafeExpenses(){
+  const expenses = {};
+  cafeTransactions.filter(t=>t.type==='Expense').forEach(t=>{
+    const key = t.desc.replace(/\s*\d+.*$/,'').trim();
+    if(!expenses[key]) expenses[key]=0;
+    expenses[key]+=t.amount;
+  });
+  const sorted = Object.entries(expenses).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const maxExp = sorted[0][1];
+  document.getElementById('exp-chart').innerHTML = sorted.map(([k,v])=>{
+    const w = Math.round((v/maxExp)*100);
+    return `<div class="bar-row"><span class="bar-label">${k}</span><div class="bar-track"><div class="bar-fill exp" style="width:${w}%"></div></div><span class="bar-amount">${Math.round(v/1000)}k</span></div>`;
+  }).join('');
+
+  const expTbody = document.getElementById('cafe-exp-tbody');
+  expTbody.innerHTML = cafeTransactions.filter(t=>t.type==='Expense').map(t=>{
+    return `<tr><td>${t.date}</td><td>${t.desc}</td><td style="color:var(--red2);font-family:'DM Mono',monospace">${t.amount.toLocaleString()}</td></tr>`;
+  }).join('');
+}
+
+function populateMuseum(){
+  document.getElementById('museum-income-tbody').innerHTML = museumIncome.map(t=>{
+    const amt = t.cur==='USD' ? '$'+t.amount : t.amount.toLocaleString()+' TZS';
+    return `<tr><td>${t.date}</td><td>${t.guests}</td><td style="color:var(--teal2)">${amt}</td><td>${t.cur}</td><td><span class="tag ${t.pay.toLowerCase()}">${t.pay}</span></td></tr>`;
+  }).join('');
+  const totalRow = `<tr class="total-row"><td>Total</td><td>8</td><td style="color:var(--teal2)">85,000 TZS + $20</td><td>—</td><td>—</td></tr>`;
+  document.getElementById('museum-income-tbody').innerHTML += totalRow;
+
+  document.getElementById('museum-exp-tbody').innerHTML = museumExp.map(t=>{
+    return `<tr><td>${t.date}</td><td>${t.item}</td><td style="color:var(--red2);font-family:'DM Mono',monospace">${t.amount.toLocaleString()}</td></tr>`;
+  }).join('') + `<tr class="total-row"><td>Total</td><td></td><td style="color:var(--red2)">115,000</td></tr>`;
+}
+
+function populateBazaar(){
+  document.getElementById('bazaar-sales-tbody').innerHTML = bazaarSales.map(t=>{
+    const amt = t.cur==='USD' ? '$'+t.amount : t.amount.toLocaleString()+' TZS';
+    return `<tr><td>${t.date}</td><td>${t.item}</td><td>${t.qty}</td><td style="color:var(--teal2)">${amt}</td><td><span class="tag ${t.pay.toLowerCase()}">${t.pay}</span></td></tr>`;
+  }).join('') + `<tr class="total-row"><td colspan="3">Total</td><td style="color:var(--teal2)">150,000 TZS + $73</td><td></td></tr>`;
+
+  document.getElementById('bazaar-exp-tbody').innerHTML = bazaarExp.map(t=>{
+    return `<tr><td>${t.date}</td><td>${t.item}</td><td style="color:var(--red2);font-family:'DM Mono',monospace">${t.amount.toLocaleString()}</td></tr>`;
+  }).join('') + `<tr class="total-row"><td colspan="2">Total</td><td style="color:var(--red2)">149,000</td></tr>`;
+}
+
+function populateInventory(){
+  const tbody = document.getElementById('inv-tbody');
+  tbody.innerHTML = bazaarInventory.map(i=>{
+    const status = i.stock===0 ? 'Out of stock' : i.stock<=2 ? 'Low' : 'OK';
+    const tagClass = i.stock===0 ? 'low' : i.stock<=2 ? 'warn' : 'ok';
+    const units = Math.min(i.stock,10);
+    const stockBars = Array.from({length:Math.min(10,Math.max(i.stock,0))},(_,j)=>`<div class="stock-unit filled ${i.stock<=2&&i.stock>0?'low':i.stock===0?'empty':''}"></div>`).join('') +
+      Array.from({length:Math.max(0,10-Math.min(i.stock,10))},()=>`<div class="stock-unit"></div>`).join('');
+    return `<tr>
+      <td style="color:var(--text3);font-family:'DM Mono',monospace">${i.n}</td>
+      <td>${i.name}</td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="stock-bar">${stockBars}</div><span style="font-family:'DM Mono',monospace;font-size:12px">${i.stock}</span></div></td>
+      <td style="font-family:'DM Mono',monospace">${i.price.toLocaleString()}</td>
+      <td><span class="tag ${tagClass}">${status}</span></td>
+    </tr>`;
+  }).join('');
+
+  const menuTbody = document.getElementById('cafe-menu-tbody');
+  menuTbody.innerHTML = cafeMenu.sort((a,b)=>(b.sold||0)-(a.sold||0)).map(i=>{
+    return `<tr>
+      <td style="color:var(--text3);font-family:'DM Mono',monospace">${i.n}</td>
+      <td>${i.name}</td>
+      <td style="font-family:'DM Mono',monospace">${i.sold||0}</td>
+      <td style="color:var(--teal2);font-family:'DM Mono',monospace">${((i.sold||0)*i.price).toLocaleString()}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── CHARTS ────────────────────────────────────────────────────────────────────
+function buildDashCharts(){
+  // Biz compare
+  const bizChart = document.getElementById('biz-compare-chart');
+  const maxBiz = 1973000;
+  const bizList = [
+    {name:'Africafe Rev',val:1973000,cls:'rev'},{name:'Africafe Exp',val:575000,cls:'exp'},
+    {name:'Museum Rev',val:85000,cls:'rev'},{name:'Museum Exp',val:115000,cls:'exp'},
+    {name:'Bazaar Rev',val:150000,cls:'rev'},{name:'Bazaar Exp',val:149000,cls:'exp'},
+  ];
+  bizChart.innerHTML = bizList.map(b=>{
+    const w = Math.round((b.val/maxBiz)*100);
+    return `<div class="bar-row"><span class="bar-label">${b.name}</span><div class="bar-track"><div class="bar-fill ${b.cls}" style="width:${w}%"></div></div><span class="bar-amount">${Math.round(b.val/1000)}k</span></div>`;
+  }).join('');
+
+  // Donut
+  const canvas = document.getElementById('donutChart');
+  const ctx = canvas.getContext('2d');
+  const data = [{v:1973000,color:'#2db898'},{v:150000,color:'#c9a84c'},{v:85000,color:'#5b9ef7'}];
+  const total = data.reduce((s,d)=>s+d.v,0);
+  const labels = ['Africafe','Bazaar','Museum'];
+  let angle = -Math.PI/2;
+  ctx.clearRect(0,0,120,120);
+  data.forEach((d,i)=>{
+    const slice = (d.v/total)*2*Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(60,60);
+    ctx.arc(60,60,52,angle,angle+slice);
+    ctx.closePath();
+    ctx.fillStyle = d.color;
+    ctx.fill();
+    angle+=slice;
+  });
+  ctx.beginPath();
+  ctx.arc(60,60,28,0,Math.PI*2);
+  ctx.fillStyle = '#1a1916';
+  ctx.fill();
+  ctx.fillStyle = '#f0ede6';
+  ctx.font = '500 13px DM Mono,monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('3 biz', 60, 64);
+
+  document.getElementById('donut-legend').innerHTML = data.map((d,i)=>{
+    return `<div class="legend-item"><div class="legend-dot" style="background:${d.color}"></div><span class="legend-name">${labels[i]}</span><span class="legend-pct">${Math.round(d.v/total*100)}%</span></div>`;
+  }).join('');
+
+  // Daily chart
+  const daily = [
+    {d:'1',r:72500,e:4000},{d:'2',r:48000,e:3500},{d:'3',r:28000,e:9500},{d:'4',r:77500,e:6000},
+    {d:'5',r:110000,e:16000},{d:'6',r:16000,e:7000},{d:'7',r:92000,e:38000},{d:'8',r:85000,e:8000},
+    {d:'9',r:39000,e:38000},{d:'10',r:73000,e:10000},{d:'11',r:73000,e:62000},{d:'12',r:51000,e:3000},
+    {d:'13',r:63000,e:13500},{d:'14',r:88000,e:9000},{d:'15',r:67000,e:16000},{d:'16',r:68000,e:113000},
+    {d:'17',r:15000,e:4000},{d:'18',r:87000,e:34500},{d:'19',r:24000,e:5000},{d:'20',r:18000,e:1000},
+    {d:'21',r:99000,e:8000},{d:'22',r:113000,e:48000},{d:'23',r:103000,e:12000},{d:'24',r:58000,e:2000},
+    {d:'25',r:209000,e:33500},
+  ];
+  const maxD = Math.max(...daily.map(d=>d.r));
+  const dailyEl = document.getElementById('daily-chart');
+  dailyEl.innerHTML = daily.map(d=>{
+    const rh = Math.round((d.r/maxD)*90);
+    const eh = Math.round((d.e/maxD)*90);
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-width:0;" title="Day ${d.d}: Revenue ${d.r.toLocaleString()} TZS, Expenses ${d.e.toLocaleString()} TZS">
+      <div style="display:flex;gap:1px;align-items:flex-end;height:90px">
+        <div style="width:6px;height:${rh}px;background:var(--teal);border-radius:2px 2px 0 0"></div>
+        <div style="width:6px;height:${eh}px;background:var(--red);border-radius:2px 2px 0 0;opacity:0.7"></div>
+      </div>
+      <div style="font-size:9px;color:var(--text3)">${d.d}</div>
+    </div>`;
+  }).join('');
+
+  // Report expenses chart
+  const reportExps = [
+    ['Internet',102000],['Electricity (all)',140000],['Staff transport',85000],['Staff food',55000],
+    ['Fresh coconut',26000],['Commission',17000],['Water',40000],['Passion fruit',10000],
+  ].sort((a,b)=>b[1]-a[1]);
+  const maxRE = reportExps[0][1];
+  document.getElementById('report-exp-chart').innerHTML = reportExps.map(([k,v])=>{
+    const w = Math.round((v/maxRE)*100);
+    return `<div class="bar-row"><span class="bar-label">${k}</span><div class="bar-track"><div class="bar-fill exp" style="width:${w}%"></div></div><span class="bar-amount">${Math.round(v/1000)}k</span></div>`;
+  }).join('');
+}
+
+// ── FILTER TABLE ──────────────────────────────────────────────────────────────
+function filterTable(tbodyId, searchId){
+  const search = document.getElementById(searchId).value.toLowerCase();
+  const filter = document.getElementById(tbodyId==='cafe-tbody' ? 'cafe-filter' : tbodyId==='inv-tbody' ? 'inv-filter' : null);
+  const filterVal = filter ? filter.value.toLowerCase() : '';
+  document.querySelectorAll('#'+tbodyId+' tr').forEach(tr=>{
+    const text = tr.textContent.toLowerCase();
+    const matchSearch = !search || text.includes(search);
+    const matchFilter = !filterVal || text.includes(filterVal);
+    tr.style.display = matchSearch && matchFilter ? '' : 'none';
+  });
+}
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  const btn = document.querySelector(`.nav-btn[onclick="showPage('${name}')"]`);
+  if(btn) btn.classList.add('active');
+}
+
+function showSub(page, sub){
+  const prefix = page+'-';
+  document.querySelectorAll(`[id^="${prefix}"]`).forEach(el=>{
+    if(el.classList.contains('sub-page')) el.classList.remove('active');
+  });
+  document.querySelectorAll('.inner-tab').forEach(t=>t.classList.remove('active'));
+  const subEl = document.getElementById(prefix+sub) || document.getElementById('inv-'+sub);
+  if(subEl) subEl.classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ── ENTRY FORM ────────────────────────────────────────────────────────────────
+function calcEntry(){
+  const qty = parseFloat(document.getElementById('a-qty').value)||0;
+  const price = parseFloat(document.getElementById('a-price').value)||0;
+  const cur = document.getElementById('a-cur').value;
+  const total = qty * price;
+  document.getElementById('a-total').textContent = total>0 ? total.toLocaleString()+' '+cur : '— '+cur;
+}
+
+let recentEntries = [];
+function saveEntry(){
+  const biz = document.getElementById('a-biz').value;
+  const type = document.getElementById('a-type').value;
+  const date = document.getElementById('a-date').value || 'Today';
+  const desc = document.getElementById('a-desc').value;
+  const qty = parseFloat(document.getElementById('a-qty').value)||1;
+  const price = parseFloat(document.getElementById('a-price').value)||0;
+  const cur = document.getElementById('a-cur').value;
+  const pay = document.getElementById('a-pay').value;
+  if(!desc||!price){ showToast('⚠ Please fill in description and price'); return; }
+  const total = qty * price;
+  recentEntries.unshift({biz,type,desc,total,cur});
+  const tbody = document.getElementById('recent-tbody');
+  if(tbody.querySelector('td[colspan]')) tbody.innerHTML='';
+  tbody.innerHTML = recentEntries.slice(0,8).map(e=>{
+    const amtColor = e.type==='income'?'var(--teal2)':'var(--red2)';
+    return `<tr>
+      <td>${e.biz}</td>
+      <td><span class="tag ${e.type}">${e.type}</span></td>
+      <td>${e.desc}</td>
+      <td style="color:${amtColor};font-family:'DM Mono',monospace">${e.total.toLocaleString()} ${e.cur}</td>
+    </tr>`;
+  }).join('');
+  showToast('✓ Entry saved: '+desc+' — '+total.toLocaleString()+' '+cur);
+  clearEntry();
+}
+
+function clearEntry(){
+  document.getElementById('a-desc').value='';
+  document.getElementById('a-qty').value='1';
+  document.getElementById('a-price').value='';
+  document.getElementById('a-total').textContent='— TZS';
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.getElementById('a-date').valueAsDate = new Date();
+populateCafe();
+populateTopItems();
+populateCafeExpenses();
+populateMuseum();
+populateBazaar();
+populateInventory();
+buildDashCharts();
+</script>
+</body>
+</html>
